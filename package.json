@@ -1,19 +1,25 @@
 {
   "name": "user-system",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "./bin/app.js",
   "license": "MIT",
   "scripts": {
     "build": "tsc",
     "start": "node ./bin/app.js",
-    "dev": "nodemon ./src/app.ts"
+    "dev": "nodemon ./src/app.ts",
+    "test": "echo test succeed",
+    "make-mig": "yarn knex migrate:make --migrations-directory  ./src/db/migrations -x ts",
+    "migrate": "yarn knex migrate:latest --knexfile ./bin/db/knexfile.js"
   },
   "dependencies": {
+    "@types/express": "^4.17.13",
+    "@types/knex": "^0.16.1",
     "@types/node": "^16.3.1",
     "chai": "^4.3.4",
     "chai-http": "^4.3.0",
     "express": "^4.17.1",
     "express-validator": "^6.12.0",
+    "knex": "^0.95.7",
     "mocha": "^9.0.2",
     "pg": "^8.6.0",
     "typescript": "^4.3.5"
