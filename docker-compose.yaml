@@ -1,0 +1,19 @@
+version: "3.5"
+
+services:
+    user_system_api:
+        container_name: "user_system_api"
+        build: 
+            context: .
+            dockerfile: ./Dockerfile
+
+        ports: 
+            - "8081:8080"
+        
+        networks: 
+            - user-system-network
+    
+
+networks: 
+    user-system-network:
+        external: true

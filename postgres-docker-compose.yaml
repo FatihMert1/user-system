@@ -1,0 +1,18 @@
+version: "3.5"
+
+services: 
+    user_system_db:
+        container_name: user_system_db
+        image: postgres
+
+        ports: 
+            - "5434:5432"
+        environment: 
+            POSTGRES_PASSWORD: password
+        volumes: 
+            - ~/Desktop/docker/volumes/user-system/db:/var/lib/postgresql
+        networks: 
+            - user-system-network
+networks: 
+    user-system-network:
+        external: true
