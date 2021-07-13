@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import db from './db/db';
 import checkXApiKey from './middlewares/check-middleware';
 import handleError from './middlewares/error-handler';
+import selectLanguage from './middlewares/select-lang';
 
 
 dotenv.config();
@@ -12,6 +13,7 @@ const app = express();
 
 app.use(express.urlencoded({extended: true}))
 
+app.use(selectLanguage);
 app.use(checkXApiKey);
 
 

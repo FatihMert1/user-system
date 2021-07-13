@@ -10,8 +10,10 @@ const checkXApiKey = (req: express.Request, res: express.Response, next: express
     const xApiKey = req.headers["x-api-key"];
     const realXApiKey = process.env.X_API_KEY;
     
-    if (xApiKey !== realXApiKey) {
-        throw new BadRequest("Invalid x-api-key", SystemResultCode.INVALID_API_KEY);
+    if (!xApiKey){
+        throw new BadRequest("Not found x-api-key", SystemResultCode.NOT_FOUND_API_KEY)
+    } else if (xApiKey !== realXApiKey) {
+        throw new BadRequest("Invalid x-api-key", SystemResultCode.INVALID_API_KEY, xApiKey);
     } else {
         next();
     }

@@ -23,7 +23,7 @@ class SystemError implements ISystemError {
         this.name = this.constructor.name;
         Error.captureStackTrace(this, this.constructor);
 
-        console.error(`Error Message : ${message}, the data is -> `, data)
+        console.error(`[System Error Message] : ${message}, the data is -> `, data)
     }
 }
 
