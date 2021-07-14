@@ -1,0 +1,73 @@
+name: 'user system api build and deploy to remote server'
+
+on:
+  push:
+    tags: '*'
+
+jobs:
+  build_and_deploy_to_hub:
+    runs-on: ubuntu-latest
+    steps:
+    -
+      name: Set Environment Variables To Github Environment Variables
+      run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+
+    -
+      name: Setup Qemu For Docker
+      uses: docker/setup-qemu-action@v1
+    -
+      name: Setup Docker Buildx
+      uses: docker/setup-buildx-action@v1
+    
+    -
+      name: Login To Docker
+      uses: docker/login-action@v1
+      with:
+        username: ${{secrets.DOCKER_USERNAME}}
+        password: ${{secrets.DOCKER_PASSWORD}}
+
+    -
+      name: Build And Push To Dockerhub
+      id: docker_build
+      uses: docker/build-push-action@v2
+      with:
+        file: ./Dockerfile
+        push: true
+        tags: fatihmert/user-system:${{env.RELEASE_VERSION}}
+      
+    -
+      name: Image Sha
+      run: echo ${{ steps.docker_build.outputs.digest }}
+
+
+  deploy_to_server:
+    needs: [build_and_deploy_to_hub]
+    runs-on: self-hosted
+    steps:
+      -
+        name: Set Environment
+        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+      
+      -
+        name: Setup Qemu
+        uses: docker/setup-qemu-action@v1
+
+      -
+        name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      -
+        name: Login To DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOKCER_USERNAME }}
+          password: ${{ secrets.DOKCER_PASSWORD }}
+      -
+        name: Stop Old Container
+        run: docker container stop user_system || true
+      
+      -
+        name: Remove Old Container
+        run: docker container rm -f user_system || true
+      -
+        name: Run New Container
+        run: docker container run -p 8080:8080 --restart always --name user_system -d --network user-system-network fatihmert/user-system:${{ env.RELEASE_VERSION }}
